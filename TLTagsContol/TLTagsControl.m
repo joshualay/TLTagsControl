@@ -314,9 +314,18 @@
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
     NSString *resultingString;
     NSString *text = textField.text;
-    
-    
-    if (string.length == 1 && [string rangeOfCharacterFromSet:[[NSCharacterSet alphanumericCharacterSet] invertedSet]].location != NSNotFound) {
+
+    static NSCharacterSet* invertedCharacterSet = nil;
+    if (invertedCharacterSet == nil)
+    {
+        NSMutableCharacterSet* characterSet = [[NSMutableCharacterSet alloc] init];
+        [characterSet formUnionWithCharacterSet:[NSCharacterSet alphanumericCharacterSet]];
+        [characterSet formUnionWithCharacterSet:[NSCharacterSet whitespaceCharacterSet]];
+
+        invertedCharacterSet = [characterSet invertedSet];
+    }
+
+    if (string.length == 1 && [string rangeOfCharacterFromSet:invertedCharacterSet].location != NSNotFound) {
         return NO;
     } else {
         if (!text || [text isEqualToString:@""]) {
@@ -325,24 +334,24 @@
             if (range.location + range.length > text.length) {
                 range.length = text.length - range.location;
             }
-            
+
             resultingString = [textField.text stringByReplacingCharactersInRange:range
                                                                       withString:string];
         }
-        
-        NSArray *components = [resultingString componentsSeparatedByCharactersInSet:[[NSCharacterSet alphanumericCharacterSet] invertedSet]];
-        
+
+        NSArray *components = [resultingString componentsSeparatedByCharactersInSet:invertedCharacterSet];
+
         if (components.count > 2) {
             for (NSString *component in components) {
-                if (component.length > 0 && [component rangeOfCharacterFromSet:[[NSCharacterSet alphanumericCharacterSet] invertedSet]].location == NSNotFound) {
+                if (component.length > 0 && [component rangeOfCharacterFromSet:invertedCharacterSet].location == NSNotFound) {
                     [self addTag:component];
                     break;
                 }
             }
-            
+
             return NO;
         }
-        
+
         return YES;
     }
 }
