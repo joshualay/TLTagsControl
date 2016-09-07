@@ -61,6 +61,10 @@
     
     [_defaultEditingTagControl reloadTagSubviews];
     [_defaultEditingTagControl setEditDelegate:self];
+    _defaultEditingTagControl.textInputFormatter = ^NSString* (NSString* text) {
+        return [text lowercaseString];
+    };
+
     [_blueEditingTagControl reloadTagSubviews];
     [_redEditingTagControl reloadTagSubviews];
     [_defauldListingTagControl reloadTagSubviews];

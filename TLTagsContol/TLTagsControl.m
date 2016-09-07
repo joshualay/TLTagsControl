@@ -198,8 +198,8 @@
     
     
     
-    for (NSString *tag in _tags) {
-        float width = [tag boundingRectWithSize:CGSizeMake(3000,tagInputField_.frame.size.height)
+    for (NSString *tagToLoad in _tags) {
+        float width = [tagToLoad boundingRectWithSize:CGSizeMake(3000,tagInputField_.frame.size.height)
                                         options:NSStringDrawingUsesLineFragmentOrigin
                                      attributes:@{NSFontAttributeName:tagInputField_.font}
                                         context:nil].size.width;
@@ -215,6 +215,11 @@
         tagLabel.font = tagInputField_.font;
         labelFrame.size.width = width + 16;
         labelFrame.size.height = tagInputField_.frame.size.height;
+
+        NSString* tag = tagToLoad;
+        if (self.textInputFormatter != nil)
+            tag = self.textInputFormatter(tag);
+
         tagLabel.text = tag;
         tagLabel.textColor = tagTextColor;
         tagLabel.textAlignment = NSTextAlignmentCenter;
@@ -270,11 +275,6 @@
             frame.origin.x = view.frame.origin.x + view.frame.size.width + 4;
         }
         tagInputField_.frame = frame;
-
-        if (self.keepTagInputAsFirstResponder) {
-            [tagInputField_ becomeFirstResponder];
-        }
-
     } else {
         if (tagInputField_.superview != nil) {
             [tagInputField_ removeFromSuperview];
@@ -312,9 +312,6 @@
 }
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string {
-    NSString *resultingString;
-    NSString *text = textField.text;
-
     static NSCharacterSet* invertedCharacterSet = nil;
     if (invertedCharacterSet == nil)
     {
@@ -328,17 +325,6 @@
     if (string.length == 1 && [string rangeOfCharacterFromSet:invertedCharacterSet].location != NSNotFound) {
         return NO;
     } else {
-        if (!text || [text isEqualToString:@""]) {
-            resultingString = string;
-        } else {
-            if (range.location + range.length > text.length) {
-                range.length = text.length - range.location;
-            }
-
-            resultingString = [textField.text stringByReplacingCharactersInRange:range
-                                                                      withString:string];
-        }
-
         return YES;
     }
 }

@@ -36,6 +36,8 @@ typedef NS_ENUM(NSUInteger, TLTagsControlMode) {
 @property (nonatomic, assign) BOOL keepTagInputAsFirstResponder;
 @property (nonatomic) TLTagsControlMode mode;
 
+@property (nonatomic, copy) NSString* (^textInputFormatter)(NSString* text);
+
 @property (weak, nonatomic) id<TLTagsControlListDelegate> listDelegate;
 @property (weak, nonatomic) id<TLTagsControlEditDelegate> editDelegate;
 
