@@ -81,6 +81,7 @@
     tagInputField_.autocorrectionType = UITextAutocorrectionTypeNo;
     
     if (_mode == TLTagsControlModeEdit) {
+        self.keepTagInputAsFirstResponder = YES;
         [self addSubview:tagInputField_];
     }
 }
@@ -169,6 +170,10 @@
     if (contentSize.width > self.frame.size.width) {
         if (_mode == TLTagsControlModeEdit) {
             offset.x = tagInputField_.frame.origin.x + tagInputField_.frame.size.width - self.frame.size.width;
+
+            if (self.keepTagInputAsFirstResponder) {
+                [tagInputField_ becomeFirstResponder];
+            }
         } else {
             UIView *lastTag = tagSubviews_.lastObject;
             offset.x = lastTag.frame.origin.x + lastTag.frame.size.width - self.frame.size.width;

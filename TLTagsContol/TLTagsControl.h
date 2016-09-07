@@ -31,6 +31,9 @@ typedef NS_ENUM(NSUInteger, TLTagsControlMode) {
 @property (nonatomic, strong) UIColor *tagsTextColor;
 @property (nonatomic, strong) UIColor *tagsDeleteButtonColor;
 @property (nonatomic, strong) NSString *tagPlaceholder;
+// Keep the input text field as first responder after adding a tag
+// Defaults to YES, only available in TLTagsControlModeEdit
+@property (nonatomic, assign) BOOL keepTagInputAsFirstResponder;
 @property (nonatomic) TLTagsControlMode mode;
 
 @property (weak, nonatomic) id<TLTagsControlListDelegate> listDelegate;
