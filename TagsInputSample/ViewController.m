@@ -8,7 +8,7 @@
 
 #import "ViewController.h"
 #import "TLTagsControl.h"
-@interface ViewController ()<TLTagsControlDelegate>
+@interface ViewController ()<TLTagsControlListDelegate, TLTagsControlEditDelegate>
 
 @property (nonatomic, strong) IBOutlet TLTagsControl *defaultEditingTagControl;
 @property (nonatomic, strong) IBOutlet TLTagsControl *blueEditingTagControl;
@@ -60,19 +60,20 @@
     _redListingTagControl.tagsTextColor = whiteTextColor;
     
     [_defaultEditingTagControl reloadTagSubviews];
+    [_defaultEditingTagControl setEditDelegate:self];
     [_blueEditingTagControl reloadTagSubviews];
     [_redEditingTagControl reloadTagSubviews];
     [_defauldListingTagControl reloadTagSubviews];
     [_blueListingTagControl reloadTagSubviews];
     [_redListingTagControl reloadTagSubviews];
-    [_redListingTagControl setTapDelegate:self];
+    [_redListingTagControl setListDelegate:self];
     
     demoTagsControl = [[TLTagsControl alloc]initWithFrame:CGRectMake(8, 340, self.view.frame.size.width - 16, 36)
                                                   andTags:@[@"These", @"Tags", @"Are", @"Tapable"]
                                       withTagsControlMode:TLTagsControlModeList];
     
     [demoTagsControl reloadTagSubviews];
-    [demoTagsControl setTapDelegate:self];
+    [demoTagsControl setListDelegate:self];
     [self.view addSubview:demoTagsControl];
 }
 
@@ -81,9 +82,18 @@
     // Dispose of any resources that can be recreated.
 }
 
-#pragma mark - TLTagsControlDelegate
+#pragma mark - TLTagsControlListDelegate
 - (void)tagsControl:(TLTagsControl *)tagsControl tappedAtIndex:(NSInteger)index {
     NSLog(@"Tag \"%@\" was tapped", tagsControl.tags[index]);
+}
+
+#pragma mark - TLTagsControlEditDelegate
+- (void)tagsControl:(TLTagsControl *)tagsControl didAddTag:(NSString *)tag {
+    NSLog(@"Added tag \"%@\"", tag);
+}
+
+- (void)tagsControl:(TLTagsControl *)tagsControl didDeleteTag:(NSString *)tag {
+    NSLog(@"Deleted tag \"%@\"", tag);
 }
 
 @end

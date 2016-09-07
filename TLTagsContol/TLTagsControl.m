@@ -17,8 +17,6 @@
     NSMutableArray              *tagSubviews_;
 }
 
-@synthesize tapDelegate;
-
 - (instancetype)init {
     self = [super init];
     
@@ -288,24 +286,21 @@
     [view removeFromSuperview];
     
     NSInteger index = [tagSubviews_ indexOfObject:view];
+    NSString *tagToBeDeleted = [_tags objectAtIndex:index];
     [_tags removeObjectAtIndex:index];
     [self reloadTagSubviews];
-}
 
-- (void)tagButtonPressed:(id)sender {
-    UIButton *button = sender;
-    
-    tagInputField_.text = @"";
-    [self addTag:button.titleLabel.text];
+    [_editDelegate tagsControl:self didDeleteTag:tagToBeDeleted];
 }
 
 #pragma mark - textfield stuff
-
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     if (textField.text.length > 0) {
         NSString *tag = textField.text;
         textField.text = @"";
         [self addTag:tag];
+
+        [_editDelegate tagsControl:self didAddTag:tag];
     }
     
     return YES;
@@ -339,19 +334,6 @@
                                                                       withString:string];
         }
 
-        NSArray *components = [resultingString componentsSeparatedByCharactersInSet:invertedCharacterSet];
-
-        if (components.count > 2) {
-            for (NSString *component in components) {
-                if (component.length > 0 && [component rangeOfCharacterFromSet:invertedCharacterSet].location == NSNotFound) {
-                    [self addTag:component];
-                    break;
-                }
-            }
-
-            return NO;
-        }
-
         return YES;
     }
 }
@@ -372,7 +354,7 @@
 
 - (void)gestureAction:(id)sender {
     UITapGestureRecognizer *tapRecognizer = (UITapGestureRecognizer *)sender;
-    [tapDelegate tagsControl:self tappedAtIndex:tapRecognizer.view.tag];
+    [_listDelegate tagsControl:self tappedAtIndex:tapRecognizer.view.tag];
 }
 
 @end
