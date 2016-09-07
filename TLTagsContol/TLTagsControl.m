@@ -170,10 +170,6 @@
     if (contentSize.width > self.frame.size.width) {
         if (_mode == TLTagsControlModeEdit) {
             offset.x = tagInputField_.frame.origin.x + tagInputField_.frame.size.width - self.frame.size.width;
-
-            if (self.keepTagInputAsFirstResponder) {
-                [tagInputField_ becomeFirstResponder];
-            }
         } else {
             UIView *lastTag = tagSubviews_.lastObject;
             offset.x = lastTag.frame.origin.x + lastTag.frame.size.width - self.frame.size.width;
@@ -274,7 +270,11 @@
             frame.origin.x = view.frame.origin.x + view.frame.size.width + 4;
         }
         tagInputField_.frame = frame;
-        
+
+        if (self.keepTagInputAsFirstResponder) {
+            [tagInputField_ becomeFirstResponder];
+        }
+
     } else {
         if (tagInputField_.superview != nil) {
             [tagInputField_ removeFromSuperview];
