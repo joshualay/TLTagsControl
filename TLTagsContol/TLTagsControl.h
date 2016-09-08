@@ -22,6 +22,7 @@
 typedef NS_ENUM(NSUInteger, TLTagsControlMode) {
     TLTagsControlModeEdit,
     TLTagsControlModeList,
+    TLTagsControlModeExternalInput // Like TLTagsControlModeEdit except the text input is removed
 };
 
 @interface TLTagsControl : UIScrollView

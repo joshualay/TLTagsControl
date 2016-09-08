@@ -8,82 +8,40 @@
 
 #import "ViewController.h"
 #import "TLTagsControl.h"
-@interface ViewController ()<TLTagsControlListDelegate, TLTagsControlEditDelegate>
+@interface ViewController ()<TLTagsControlListDelegate, TLTagsControlEditDelegate, UITextFieldDelegate>
 
-@property (nonatomic, strong) IBOutlet TLTagsControl *defaultEditingTagControl;
-@property (nonatomic, strong) IBOutlet TLTagsControl *blueEditingTagControl;
-@property (nonatomic, strong) IBOutlet TLTagsControl *redEditingTagControl;
-@property (nonatomic, strong) IBOutlet TLTagsControl *defauldListingTagControl;
-@property (nonatomic, strong) IBOutlet TLTagsControl *blueListingTagControl;
-@property (nonatomic, strong) IBOutlet TLTagsControl *redListingTagControl;
-
+@property (nonatomic, weak) IBOutlet TLTagsControl *defaultEditingTagControl;
+@property (nonatomic, weak) IBOutlet TLTagsControl *defaultListingTagControl;
+@property (nonatomic, weak) IBOutlet TLTagsControl *defaultExteralInputTagControl;
+@property (nonatomic, weak) IBOutlet UITextField* tagTextField;
 @end
 
-@implementation ViewController {
-    TLTagsControl *demoTagsControl;
-}
+@implementation ViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+
+    NSString *(^lowerCaseFormatter)(NSString* text) = ^NSString* (NSString* text) {
+        return [text lowercaseString];
+    };
     // Do any additional setup after loading the view, typically from a nib.
     NSMutableArray *tags = [NSMutableArray arrayWithArray:@[@"A", @"Tag", @"One", @"More", @"Tag", @"And", @"Yet", @"Another", @"One"]];
     _defaultEditingTagControl.tags = [tags mutableCopy];
-    _blueEditingTagControl.tags = [tags mutableCopy];
-    _redEditingTagControl.tags = [tags mutableCopy];
     _defaultEditingTagControl.tagPlaceholder = @"Placeholder";
-    
-    _defauldListingTagControl.tags = [tags mutableCopy];
-    _blueListingTagControl.tags = [tags mutableCopy];
-    _redListingTagControl.tags = [tags mutableCopy];
-    
-    _defauldListingTagControl.mode = TLTagsControlModeList;
-    _blueListingTagControl.mode = TLTagsControlModeList;
-    _redListingTagControl.mode = TLTagsControlModeList;
-    
-    UIColor *blueBackgroundColor = [UIColor colorWithRed:75.0/255.0 green:186.0/255.0 blue:251.0/255.0 alpha:1];
-    UIColor *redBackgroundColor = [UIColor colorWithRed:233.0/255.0 green:70.0/255.0 blue:78.0/255.0 alpha:1];
-    UIColor *darkRedButtonColor = [UIColor colorWithRed:250.0/255.0 green:140.0/255.0 blue:140.0/255.0 alpha:1];
-    UIColor *whiteTextColor = [UIColor whiteColor];
-    
-    _blueEditingTagControl.tagsBackgroundColor = blueBackgroundColor;
-    _blueEditingTagControl.tagsDeleteButtonColor = whiteTextColor;
-    _blueEditingTagControl.tagsTextColor = whiteTextColor;
-    
-    _blueListingTagControl.tagsBackgroundColor = blueBackgroundColor;
-    _blueListingTagControl.tagsTextColor = whiteTextColor;
-    
-    _redEditingTagControl.tagsBackgroundColor = redBackgroundColor;
-    _redEditingTagControl.tagsDeleteButtonColor = darkRedButtonColor;
-    _redEditingTagControl.tagsTextColor = whiteTextColor;
-    
-    _redListingTagControl.tagsBackgroundColor = redBackgroundColor;
-    _redListingTagControl.tagsTextColor = whiteTextColor;
-    
+    _defaultEditingTagControl.editDelegate = self;
+    _defaultEditingTagControl.textInputFormatter = lowerCaseFormatter;
+
+    _defaultListingTagControl.tags = [tags mutableCopy];
+    _defaultListingTagControl.mode = TLTagsControlModeList;
+    _defaultListingTagControl.listDelegate = self;
+
+    _defaultExteralInputTagControl.editDelegate = self;
+    _defaultExteralInputTagControl.mode = TLTagsControlModeExternalInput;
+    _defaultExteralInputTagControl.textInputFormatter = lowerCaseFormatter;
+
     [_defaultEditingTagControl reloadTagSubviews];
-    [_defaultEditingTagControl setEditDelegate:self];
-    _defaultEditingTagControl.textInputFormatter = ^NSString* (NSString* text) {
-        return [text lowercaseString];
-    };
-
-    [_blueEditingTagControl reloadTagSubviews];
-    [_redEditingTagControl reloadTagSubviews];
-    [_defauldListingTagControl reloadTagSubviews];
-    [_blueListingTagControl reloadTagSubviews];
-    [_redListingTagControl reloadTagSubviews];
-    [_redListingTagControl setListDelegate:self];
-    
-    demoTagsControl = [[TLTagsControl alloc]initWithFrame:CGRectMake(8, 340, self.view.frame.size.width - 16, 36)
-                                                  andTags:@[@"These", @"Tags", @"Are", @"Tapable"]
-                                      withTagsControlMode:TLTagsControlModeList];
-    
-    [demoTagsControl reloadTagSubviews];
-    [demoTagsControl setListDelegate:self];
-    [self.view addSubview:demoTagsControl];
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    [_defaultListingTagControl reloadTagSubviews];
+    [_defaultExteralInputTagControl reloadTagSubviews];
 }
 
 #pragma mark - TLTagsControlListDelegate
@@ -100,4 +58,14 @@
     NSLog(@"Deleted tag \"%@\"", tag);
 }
 
+#pragma mark - UITextFieldDelegate
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    if (textField.text.length > 0) {
+        [_defaultExteralInputTagControl addTag:textField.text];
+
+        textField.text = @"";
+    }
+
+    return YES;
+}
 @end

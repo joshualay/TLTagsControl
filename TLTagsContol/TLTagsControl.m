@@ -160,6 +160,10 @@
             return;
         }
     }
+
+    if (self.textInputFormatter != nil) {
+        tag = self.textInputFormatter(tag);
+    }
     
     [_tags addObject:tag];
     [self reloadTagSubviews];
@@ -226,7 +230,7 @@
         tagLabel.clipsToBounds = YES;
         tagLabel.layer.cornerRadius = 5;
         
-        if (_mode == TLTagsControlModeEdit) {
+        if (_mode == TLTagsControlModeEdit || _mode == TLTagsControlModeExternalInput) {
             UIButton *deleteTagButton = [[UIButton alloc] initWithFrame:tagInputField_.frame];
             CGRect buttonFrame = deleteTagButton.frame;
             [deleteTagButton.titleLabel setFont:tagInputField_.font];
@@ -330,19 +334,6 @@
 }
 
 #pragma mark - other
-
-- (void)setMode:(TLTagsControlMode)mode {
-    _mode = mode;
-}
-
-- (void)setTags:(NSMutableArray *)tags {
-    _tags = tags;
-}
-
-- (void)setPlaceholder:(NSString *)tagPlaceholder {
-    _tagPlaceholder = tagPlaceholder;
-}
-
 - (void)gestureAction:(id)sender {
     UITapGestureRecognizer *tapRecognizer = (UITapGestureRecognizer *)sender;
     [_listDelegate tagsControl:self tappedAtIndex:tapRecognizer.view.tag];
